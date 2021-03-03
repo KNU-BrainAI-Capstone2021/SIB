@@ -1,10 +1,12 @@
 # SIB
 
+<p align="center">
 <image src="images/sib_logo.png" width="300">
+</p>
 
 ### SIB : Simple Is Best
 
-| Name  | Github LInk |
+| Name  | Github Lnk |
 |-------|--------|
 | 황현상 | [@hwang-hs](https://github.com/hwang-hs) |
 | 윤대헌 | [@Greathoney](https://github.com/Greathoney) |
