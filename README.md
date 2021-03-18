@@ -4,7 +4,7 @@
 
 ### SIB : Simple Is Best
 
-| Name  | Github LInk |
+| Name  | Github Link |
 |-------|--------|
 | 황현상 | [@hwang-hs](https://github.com/hwang-hs) |
 | 윤대헌 | [@Greathoney](https://github.com/Greathoney) |
