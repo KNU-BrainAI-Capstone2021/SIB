@@ -1,29 +1,33 @@
 '''
 original code can be found at:
-    https://gozz123.tistory.com/31
+    https://pynput.readthedocs.io/en/latest/keyboard.html
 '''
 
 from pynput import keyboard
 
-def on_press(key): 
-    print('Key %s pressed' % key) 
-    
-def on_release(key): 
-    print('Key %s released' %key) 
-    
-    if key == keyboard.Key.esc: 
-        # esc 키가 입력되면 종료 
-        return False 
+def on_press(key):
+    try:
+        print('alphanumeric key {0} pressed'.format(
+            key.char))
+    except AttributeError:
+        print('special key {0} pressed'.format(
+            key))
 
-# 리스너 등록방법1 
-with keyboard.Listener( 
-    on_press=on_press, 
-    on_release=on_release) as listener: 
-    listener.join() 
+def on_release(key):
+    print('{0} released'.format(
+        key))
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
 
-# 리스너 등록방법2 
-# listener = keyboard.Listener( 
-# on_press=on_press, 
-# on_release=on_release) 
+# Collect events until released
+with keyboard.Listener(
+        on_press=on_press,
+        on_release=on_release) as listener:
+    listener.join()
+
+# ...or, in a non-blocking fashion:
+# listener = keyboard.Listener(
+#     on_press=on_press,
+#     on_release=on_release)
 # listener.start()
-# listener.join()
