@@ -1,36 +1,28 @@
-import datetime
 from pynput import keyboard 
 
+import sys, os 
+sys.path.append(os.pardir)
 
-def get_now():
-    return datetime.datetime.now()
-
-def flush_input():
-    import sys, termios
-    termios.tcflush(sys.stdin, termios.TCIOFLUSH)
-
-def file_append(file_path, target_string):
-    f = open(file_path, 'a')
-    f.write(target_string)
-    f.close()
+from utils import flush_input, file_append, get_now
 
 
 current_pressed = set()
 file_path = './key.log'
 
 def on_press(key): 
-    current_pressed.add(key)
-
-    str = '%s pressed\n' % current_pressed
-    file_append(file_path, str)
-    
-def on_release(key): 
-    str = '%s released\n' %key
-    file_append(file_path, str)
-    
     if key == keyboard.Key.esc:
         flush_input()
         return False 
+
+    current_pressed.add(key)
+
+    str = f'{get_now()} {current_pressed} pressed\n'
+    file_append(file_path, str)
+    
+def on_release(key):     
+    str = f'{get_now()} {key} released\n'
+    file_append(file_path, str)
+
     if key in current_pressed: 
         current_pressed.remove(key) 
         
