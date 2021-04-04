@@ -50,6 +50,9 @@ with mp_hands.Hands(
       line1 = live_plotter(x_vec, y_vec, line1)
       y_vec = np.append(y_vec[1:], 0.0)
 
+    
+
+
       # time.sleep(0.3)
     #
     # else:
