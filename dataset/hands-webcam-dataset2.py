@@ -9,11 +9,21 @@ import cv2
 import mediapipe as mp
 import time
 
+from pynput import keyboard
+
+import sys, os
+sys.path.append(os.pardir)
+
+from utils import flush_input, file_append, get_now
+
+
+current_pressed = set()
+
 
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 
-with open('log.txt', 'w') as log:
+with open('log.csv', 'w') as log:
     print("new log file")
 
 start_time = time.time()
@@ -24,6 +34,8 @@ with mp_hands.Hands(
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5) as hands:
   while cap.isOpened():
+    # time.sleep(0.3)
+
     success, image = cap.read()
     if not success:
       print("Ignoring empty camera frame.")
@@ -38,9 +50,7 @@ with mp_hands.Hands(
     image.flags.writeable = False
     results = hands.process(image)
 
-    time.sleep(0.3)
-
-    with open('log.txt', 'a') as log:
+    with open('log.csv', 'a') as log:
         log.write('{:f},'.format(time.time() - start_time))
         if results.multi_hand_landmarks:
             if len(results.multi_handedness) == 1:
@@ -48,10 +58,10 @@ with mp_hands.Hands(
                     for landmark in results.multi_hand_landmarks[0].landmark:
                         log.write('{:f},{:f},{:f},'.format(landmark.x, landmark.y, landmark.z))
                     log.write('{:f},'.format(results.multi_handedness[0].classification[0].score))
-                    for i in range(22):
+                    for i in range(64):
                         log.write(",")
                 else:  # Right
-                    for i in range(22):
+                    for i in range(64):
                         log.write(",")
                     for landmark in results.multi_hand_landmarks[0].landmark:
                         log.write('{:f},{:f},{:f},'.format(landmark.x, landmark.y, landmark.z))
@@ -74,6 +84,11 @@ with mp_hands.Hands(
         else:
             for i in range(44):
                 log.write(",")
+
+        # add y label
+
+
+
         log.write("\n")
 
 
