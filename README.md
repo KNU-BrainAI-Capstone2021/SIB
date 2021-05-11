@@ -15,5 +15,7 @@
 ### STUDY
 
 &middot; digit-recognizer :  https://www.kaggle.com/c/digit-recognizer<br>
-&middot; data :  https://www.kaggle.com/ash316/eda-to-prediction-dietanic
+&middot; data :  https://www.kaggle.com/ash316/eda-to-prediction-dietanic<br>
+&middot; 비슷한 모델 (lip reading) :  https://github.com/astorfi/lip-reading-deeplearning<br>
+       http://cs231n.stanford.edu/reports/2016/pdfs/217_Report.pdf<br>
 
