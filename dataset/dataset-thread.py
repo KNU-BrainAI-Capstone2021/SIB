@@ -82,14 +82,18 @@ def process_hand_asdf(hand_data):
         else:
             for i in range(22):
                 log.write(",")
+        
+        for key in curr_pressed[:-1]:
+            log.write('{:d},'.format(key))
+        log.write('{:d}'.format(curr_pressed[-1]))
+        
         log.write('\n')
-
 
 
 def hand_thread(flip=False):
 
     # mediapipe hands module
-    # mp_drawing = mp.solutions.drawing_utils
+    mp_drawing = mp.solutions.drawing_utils
     mp_hands   = mp.solutions.hands
 
     # webcam input
@@ -121,7 +125,7 @@ def hand_thread(flip=False):
 
             process_hand_asdf(hand_data)
 
-            '''
+            
             if hand_data.multi_hand_landmarks:
                 for hand_landmarks in hand_data.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(
@@ -129,7 +133,7 @@ def hand_thread(flip=False):
             cv2.imshow('MediaPipe Hands', image)
             if cv2.waitKey(5) & 0xFF == 27:
                 break
-            '''
+            
 
 
 
@@ -141,7 +145,7 @@ if __name__ == '__main__':
     open('log.csv', 'w').close()  # delete before log
     
     key  = threading.Thread(target=keyboard_thread)
-    hand = threading.Thread(target=hand_thread, args=(True,))
+    hand = threading.Thread(target=hand_thread, args=(False,))
 
     key.start()
     hand.start()
