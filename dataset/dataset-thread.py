@@ -2,7 +2,7 @@
 # Platform: Python 3.8.8 on Ubuntu Linux 18.04
 # Required Package(s): mediapipe, pynput
 # Date: 2021.05.18
-# Name: Dohun Kim
+# Name: Dohun Kim, DaeHeon Yoon
 
 
 ################################# import packages #################################
@@ -72,7 +72,16 @@ def keyboard_thread():
 
 ############################ hand landmark - mediapipe ############################
 
+TIMEOUT = 1 / 30
+
+def process_hand_asdf(data):
+
+    with open('log.csv', 'a') as log:
+        log.write()
+
+
 def hand_thread():
+
     # mediapipe hands module
     mp_hands   = mp.solutions.hands
 
@@ -83,7 +92,14 @@ def hand_thread():
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
 
+        old_timestamp = time.time()
+
         while cap.isOpened():
+            if (time.time() - old_timestamp) <= TIMEOUT:
+                continue
+
+            old_timestamp = time.time()
+
             success, image = cap.read()
 
             if not success:
@@ -98,6 +114,7 @@ def hand_thread():
                 func() results -> log.csv
             '''
 
+            process_hand_asdf(results)
 
 
 
@@ -106,6 +123,9 @@ def hand_thread():
 ####################################### main ######################################
 
 if __name__ == '__main__':
+
+    open('log.csv', 'w').close()  # delete before log
+    
     key  = threading.Thread(target=keyboard_thread)
     hand = threading.Thread(target=hand_thread)
 
