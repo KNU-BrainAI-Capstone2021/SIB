@@ -74,10 +74,15 @@ def keyboard_thread():
 
 TIMEOUT = 1 / 30
 
-def process_hand_asdf(data):
-
+def process_hand_asdf(hand_data):
     with open('log.csv', 'a') as log:
-        log.write()
+        if hand_data.multi_hand_landmarks:
+            for landmark in hand_data.multi_hand_landmarks[0].landmark:
+                log.write('{:f},{:f},{:f},'.format(landmark.x, landmark.y, landmark.z))
+        else:
+            for i in range(22):
+                log.write(",")
+
 
 
 def hand_thread():
@@ -107,14 +112,14 @@ def hand_thread():
                 continue
                 
             image.flags.writable = False
-            results = hands.process(image)
+            hand_data = hands.process(image)
 
             '''
             ADD HERE: 
                 func() results -> log.csv
             '''
 
-            process_hand_asdf(results)
+            process_hand_asdf(hand_data)
 
 
 
