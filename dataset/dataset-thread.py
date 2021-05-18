@@ -73,9 +73,33 @@ def keyboard_thread():
 ############################ hand landmark - mediapipe ############################
 
 def hand_thread():
-    while True:
-        print('hello')
-        time.sleep(1)
+    # mediapipe hands module
+    mp_hands   = mp.solutions.hands
+
+    # webcam input
+    cap = cv2.VideoCapture(0)
+
+    with mp_hands.Hands(
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5) as hands:
+
+        while cap.isOpened():
+            success, image = cap.read()
+
+            if not success:
+                print("Ignoring empty camera frame.")
+                continue
+                
+            image.flags.writable = False
+            results = hands.process(image)
+
+            '''
+            ADD HERE: 
+                func() results -> log.csv
+            '''
+
+
+
 
 
 
