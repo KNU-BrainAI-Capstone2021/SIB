@@ -82,12 +82,14 @@ def process_hand_asdf(hand_data):
         else:
             for i in range(22):
                 log.write(",")
+        log.write('\n')
 
 
 
-def hand_thread():
+def hand_thread(flip=False):
 
     # mediapipe hands module
+    # mp_drawing = mp.solutions.drawing_utils
     mp_hands   = mp.solutions.hands
 
     # webcam input
@@ -110,17 +112,24 @@ def hand_thread():
             if not success:
                 print("Ignoring empty camera frame.")
                 continue
-                
-            image.flags.writable = False
-            hand_data = hands.process(image)
 
-            '''
-            ADD HERE: 
-                func() results -> log.csv
-            '''
+            if flip:
+                image = cv2.flip(image, 1)
+                
+            image.flags.writeable = False
+            hand_data = hands.process(image)
 
             process_hand_asdf(hand_data)
 
+            '''
+            if hand_data.multi_hand_landmarks:
+                for hand_landmarks in hand_data.multi_hand_landmarks:
+                    mp_drawing.draw_landmarks(
+                        image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+            cv2.imshow('MediaPipe Hands', image)
+            if cv2.waitKey(5) & 0xFF == 27:
+                break
+            '''
 
 
 
@@ -132,7 +141,7 @@ if __name__ == '__main__':
     open('log.csv', 'w').close()  # delete before log
     
     key  = threading.Thread(target=keyboard_thread)
-    hand = threading.Thread(target=hand_thread)
+    hand = threading.Thread(target=hand_thread, args=(True,))
 
     key.start()
     hand.start()
