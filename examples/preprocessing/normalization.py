@@ -17,10 +17,10 @@ def normalize(data):
 
 print(normalize(data))
 
-#### zero centering ####
-# a = np.array(data)
-# AVG = np.mean(a)
+### zero centering ####
+a = np.array(data)
+AVG = np.mean(a)
 
-# def zero_centering(data):
-#     data = data - AVG
-#     return data
+def zero_centering(data):
+    data = data - AVG
+    return data
