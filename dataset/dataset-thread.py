@@ -96,7 +96,7 @@ def process_hand_asdf(hand_data):
         log.write('\n')
 
 
-def hand_thread(flip=False):
+def hand_thread(flip=False, show_cam=False):
 
     # mediapipe hands module
     mp_drawing = mp.solutions.drawing_utils
@@ -132,17 +132,18 @@ def hand_thread(flip=False):
             hand_data = hands.process(image)
 
             process_hand_asdf(hand_data)
-
-            image.flags.writeable = True
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             
-            if hand_data.multi_hand_landmarks:
-                for hand_landmarks in hand_data.multi_hand_landmarks:
-                    mp_drawing.draw_landmarks(
-                        image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-            cv2.imshow('MediaPipe Hands', image)
-            if cv2.waitKey(5) & 0xFF == 27:
-                break
+            if show_cam:
+                image.flags.writeable = True
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                
+                if hand_data.multi_hand_landmarks:
+                    for hand_landmarks in hand_data.multi_hand_landmarks:
+                        mp_drawing.draw_landmarks(
+                            image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                cv2.imshow('MediaPipe Hands', image)
+                if cv2.waitKey(5) & 0xFF == 27:
+                    break
             
 
 
@@ -155,7 +156,7 @@ if __name__ == '__main__':
     open('log.csv', 'w').close()  # delete before log
     
     key  = threading.Thread(target=keyboard_thread)
-    hand = threading.Thread(target=hand_thread, args=(False,))
+    hand = threading.Thread(target=hand_thread, kwargs={'show_cam': True})
 
     key.start()
     hand.start()
