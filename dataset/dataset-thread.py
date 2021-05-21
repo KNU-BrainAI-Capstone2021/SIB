@@ -37,10 +37,13 @@ def key2num(key):
 
 
 def on_press(key): 
-    num = key2num(key)
+    try:
+        num = key2num(key)
+    except:
+        return
 
     if num == None:
-        return False 
+        return
 
     curr_pressed[num] = 1
 
@@ -48,7 +51,10 @@ def on_press(key):
 
 
 def on_release(key):
-    num = key2num(key)
+    try:
+        num = key2num(key)
+    except:
+        return
 
     if num == None:
         return
