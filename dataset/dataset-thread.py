@@ -78,7 +78,8 @@ def keyboard_thread():
 
 ############################ hand landmark - mediapipe ############################
 
-TIMEOUT = 1 / 30
+FPS     = 30
+TIMEOUT = 1 / FPS
 
 def process_hand_asdf(hand_data):
     with open('log.csv', 'a') as log:
@@ -112,6 +113,7 @@ def hand_thread(flip=False, show_cam=False):
         old_timestamp = time.time()
 
         while cap.isOpened():
+            # while-loop with fixed frame rate(FPS)
             if (time.time() - old_timestamp) <= TIMEOUT:
                 continue
 
@@ -137,11 +139,25 @@ def hand_thread(flip=False, show_cam=False):
                 image.flags.writeable = True
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
                 
+                # add hand landmarks to image
                 if hand_data.multi_hand_landmarks:
                     for hand_landmarks in hand_data.multi_hand_landmarks:
-                        mp_drawing.draw_landmarks(
-                            image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                        mp_drawing.draw_landmarks(image, hand_landmarks, 
+                                                  mp_hands.HAND_CONNECTIONS)
+
+                # add current pressed key to image
+                org       = (50, 50)
+                fontFace  = cv2.FONT_HERSHEY_SIMPLEX
+                fontScale = 1
+                color     = (0, 0, 255) # (B, G, R)
+                thickness = 2
+
+                image = cv2.putText(image, str(curr_pressed), org, fontFace, 
+                                    fontScale, color, thickness, cv2.LINE_AA)
+
+                # show image
                 cv2.imshow('MediaPipe Hands', image)
+                
                 if cv2.waitKey(5) & 0xFF == 27:
                     break
             
