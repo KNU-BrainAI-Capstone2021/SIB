@@ -116,6 +116,8 @@ def hand_thread(flip=False):
             if not success:
                 print("Ignoring empty camera frame.")
                 continue
+            
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
             if flip:
                 image = cv2.flip(image, 1)
@@ -125,6 +127,8 @@ def hand_thread(flip=False):
 
             process_hand_asdf(hand_data)
 
+            image.flags.writeable = True
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             
             if hand_data.multi_hand_landmarks:
                 for hand_landmarks in hand_data.multi_hand_landmarks:
