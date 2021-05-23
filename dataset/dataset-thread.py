@@ -47,7 +47,7 @@ def on_press(key):
 
     curr_pressed[num] = 1
 
-    print(curr_pressed)
+    # print(curr_pressed)
 
 
 def on_release(key):
@@ -61,7 +61,7 @@ def on_release(key):
 
     curr_pressed[num] = 0
 
-    print(curr_pressed)
+    # print(curr_pressed)
 
 
 def keyboard_thread():
@@ -87,8 +87,8 @@ def process_hand_asdf(hand_data):
             for landmark in hand_data.multi_hand_landmarks[0].landmark:
                 log.write('{:f},{:f},{:f},'.format(landmark.x, landmark.y, landmark.z))
         else:
-            for i in range(22):
-                log.write(",")
+            for i in range(21):
+                log.write(",,,")
         
         for key in curr_pressed[:-1]:
             log.write('{:d},'.format(key))
