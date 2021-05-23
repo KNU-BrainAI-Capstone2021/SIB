@@ -5,6 +5,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from celluloid import Camera
 
 #################################### load data ####################################
 
@@ -43,9 +44,11 @@ ys = df[['L%dy' % i for i in range(21)]]
 zs = df[['L%dz' % i for i in range(21)]]
 
 
-for n in range(len(xs)):
+fig = plt.figure(figsize=(10, 10))
+camera = Camera(fig)
 
-    fig = plt.figure(figsize=(10, 10))
+for n in range(10):
+
     ax = fig.gca(projection='3d')
 
     x, y, z = xs.iloc[n], ys.iloc[n], zs.iloc[n]    
@@ -58,4 +61,16 @@ for n in range(len(xs)):
 
     plt.xlabel('x')
     plt.ylabel('y')
-    plt.show()
+    # plt.show()
+    camera.snap()
+
+animation = camera.animate(interval=50, blit=True)
+
+animation.save(
+    'hand.gif',
+    dpi=100,
+    savefig_kwargs={
+        'frameon': False,
+        'pad_inches': 'tight'
+    }
+)
