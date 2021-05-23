@@ -32,6 +32,8 @@ fingers = [[0, 1, 2, 3, 4],
            [0, 17, 18, 19, 20],
            [5, 9, 13, 17]]
 
+finger_colors = ['r','g','b','c','m','y']
+
 
 # x_means = x_df.mean()
 
@@ -52,9 +54,11 @@ for n in range(10):
     ax = fig.gca(projection='3d')
 
     x, y, z = xs.iloc[n], ys.iloc[n], zs.iloc[n]    
+    j = 0
 
-    for finger in fingers:
-        ax.plot(x[finger], y[finger], z[finger], '')
+    for finger, finger_color in zip(fingers, finger_colors):
+        ax.plot(x[finger], y[finger], z[finger], finger_color)
+        j = (j+1) % 6
         for i in finger:
             ax.text(x[i], y[i], z[i], '%d' % i)
 
