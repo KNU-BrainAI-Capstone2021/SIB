@@ -1,5 +1,8 @@
 
-import pandas as pd
+
+
+################################# import packages #################################
+
 import matplotlib.pyplot as plt
 
 from celluloid import Camera
@@ -18,7 +21,7 @@ landmark = ['WRIST',
 
 ########################### plot z-values of finger tips ##########################
 
-def plot_2d(df, file_name='hand.png'):                
+def plot_2d(df, title, file_name='hand.png'):                
 
     plt.figure(figsize=(12, 8))
 
@@ -28,13 +31,14 @@ def plot_2d(df, file_name='hand.png'):
     for y in y_names:
         ax0.plot(df[y], label=y)
     ax0.set_title('keyboard input')
-    ax0.legend()
+    ax0.legend(loc='upper left')
 
     for i in [4, 8, 12, 16, 20]:
         ax1.plot(df['L%dz' %i], label=landmark[i])
     ax1.set_title('z values')
-    ax1.legend()
+    ax1.legend(loc='upper left')
 
+    plt.suptitle(title)
     plt.tight_layout()
     # plt.show()
     plt.savefig(file_name)
@@ -42,7 +46,7 @@ def plot_2d(df, file_name='hand.png'):
 
 ################################ plot hand landmark ###############################
 
-def plot_3d(df, filename='hand.gif'):
+def plot_3d(df, title, filename='hand.gif'):
     fingers = [[0, 1, 2, 3, 4],
                [0, 5, 6, 7, 8],
                [9, 10, 11, 12],
@@ -60,6 +64,7 @@ def plot_3d(df, filename='hand.gif'):
 
     fig = plt.figure(figsize=(10, 10))
     ax = fig.gca(projection='3d')
+    ax.set_title(title)
 
     camera = Camera(fig)
 
