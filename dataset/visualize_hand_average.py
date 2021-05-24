@@ -20,10 +20,9 @@ df = pd.read_csv(file_path, names=col_names)
 
 df = df.iloc[df.index[340:420]]
 
-columns = ['L%d%c' % (i, c) for i in range(21) for c in ['x', 'y', 'z']]
 gamma = 0.2  # 감마 가중치
 
-for column in columns:
+for column in x_names:
     for row in range(1, len(df)):
         df[column].iloc[row] = df[column].iloc[row-1] * (1-gamma) + df[column].iloc[row] * gamma
 
