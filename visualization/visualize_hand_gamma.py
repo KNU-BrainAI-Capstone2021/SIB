@@ -22,10 +22,11 @@ df = df.iloc[df.index[340:420]]
 
 ################################# weight smoothing ################################
 
-gamma = 0.2  # weight of new value
+gamma = 0.4  # weight of new value
 
-for row in range(1, len(df)):
-    df[x_names].iloc[row] = df[x_names].iloc[row-1] * (1-gamma) + df[x_names].iloc[row] * gamma
+for x in x_names:
+    for row in range(1, len(df)):
+        df[x].iloc[row] = df[x].iloc[row-1] * (1-gamma) + df[x].iloc[row] * gamma
 
 
 #################################### plot data ####################################

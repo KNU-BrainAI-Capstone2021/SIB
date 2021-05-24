@@ -22,16 +22,17 @@ df = df.iloc[df.index[340:420]]
 
 ################################# average smoothing ###############################
 
-x_df = df[x_names]
+df_copy = df[x_names]
 
-window_size = 20
+window_size = 5
 
-for i in range(1, len(x_df)):
+for x in x_names:
+    for i in range(1, len(df)):
 
-    start = max(0, i - window_size + 1)
-    end   = i + 1
+        start = max(0, i - window_size + 1)
+        end   = i + 1
 
-    df[x_names].iloc[i] = x_df.iloc[start:end].mean()
+        df[x].iloc[i] = df_copy[x].iloc[start:end].mean()
 
 
 #################################### plot data ####################################
