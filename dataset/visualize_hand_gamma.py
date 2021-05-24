@@ -20,13 +20,13 @@ df = pd.read_csv(file_path, names=col_names)
 
 df = df.iloc[df.index[340:420]]
 
-gamma = 0.2  # 감마 가중치
 
-for column in x_names:
-    for row in range(1, len(df)):
-        df[column].iloc[row] = df[column].iloc[row-1] * (1-gamma) + df[column].iloc[row] * gamma
+################################# weight smoothing ################################
 
-x_df = df[x_names]
+gamma = 0.2  # weight of new value
+
+for row in range(1, len(df)):
+    df[x_names].iloc[row] = df[x_names].iloc[row-1] * (1-gamma) + df[x_names].iloc[row] * gamma
 
 
 ################################ plot hand landmark ###############################
@@ -44,9 +44,6 @@ finger_colors = ['r','g','b','c','m','y']
 xs = df[['L%dx' % i for i in range(21)]]
 ys = df[['L%dy' % i for i in range(21)]]
 zs = df[['L%dz' % i for i in range(21)]]
-
-a = xs.iloc[0]
-b = xs.iloc[1]
 
 
 fig = plt.figure(figsize=(10, 10))
@@ -70,7 +67,7 @@ for n in range(len(xs)):
 animation = camera.animate(interval=50, blit=True)
 
 animation.save(
-    'hand_average.gif',
+    'hand_gamma.gif',
     dpi=100,
     savefig_kwargs={
         'frameon': False,

@@ -20,8 +20,6 @@ df = pd.read_csv(file_path, names=col_names)
 
 df = df.iloc[df.index[340:420]]
 
-x_df = df[x_names]
-
 
 ################################ plot hand landmark ###############################
 
