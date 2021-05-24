@@ -24,9 +24,8 @@ columns = ['L%d%c' % (i, c) for i in range(21) for c in ['x', 'y', 'z']]
 gamma = 0.2  # 감마 가중치
 
 for column in columns:
-    average = df[column].iloc[0]
-    for row in range(len(df)):
-        df[column].iloc[row] = average * (1-gamma) + df[column].iloc[row] * gamma
+    for row in range(1, len(df)):
+        df[column].iloc[row] = df[column].iloc[row-1] * (1-gamma) + df[column].iloc[row] * gamma
 
 x_df = df[x_names]
 
