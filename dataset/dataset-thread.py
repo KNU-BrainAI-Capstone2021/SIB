@@ -21,7 +21,8 @@ import mediapipe as mp
 
 mapping_dict = {'a': 0, 's': 1, 'd': 2, 'f': 3}
 
-curr_pressed = [0] * len(mapping_dict)
+curr_num = None
+curr_vector = [0] * len(mapping_dict)
 
 
 def flush_input():
@@ -44,10 +45,14 @@ def on_press(key):
 
     if num == None:
         return
+    
+    global curr_num
+    if curr_num != None:
+        curr_vector[curr_num] = 0
+    curr_vector[num] = 1
+    curr_num = num
 
-    curr_pressed[num] = 1
-
-    # print(curr_pressed)
+    print(curr_vector)
 
 
 def on_release(key):
@@ -58,10 +63,13 @@ def on_release(key):
 
     if num == None:
         return
+    
+    global curr_num
+    if curr_num == num:
+        curr_vector[num] = 0
+        curr_num == None
 
-    curr_pressed[num] = 0
-
-    # print(curr_pressed)
+    print(curr_vector)
 
 
 def keyboard_thread():
@@ -90,9 +98,9 @@ def process_hand_asdf(hand_data):
             for i in range(21):
                 log.write(",,,")
         
-        for key in curr_pressed[:-1]:
+        for key in curr_vector[:-1]:
             log.write('{:d},'.format(key))
-        log.write('{:d}'.format(curr_pressed[-1]))
+        log.write('{:d}'.format(curr_vector[-1]))
         
         log.write('\n')
 
@@ -152,7 +160,7 @@ def hand_thread(flip=False, show_cam=False):
                 color     = (0, 0, 255) # (B, G, R)
                 thickness = 2
 
-                image = cv2.putText(image, str(curr_pressed), org, fontFace, 
+                image = cv2.putText(image, str(curr_vector), org, fontFace, 
                                     fontScale, color, thickness, cv2.LINE_AA)
 
                 # show image
