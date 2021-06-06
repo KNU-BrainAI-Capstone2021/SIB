@@ -52,7 +52,7 @@ def on_press(key):
     curr_vector[num] = 1
     curr_num = num
 
-    print(curr_vector)
+    # print(curr_vector)
 
 
 def on_release(key):
