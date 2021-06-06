@@ -52,7 +52,7 @@ def on_press(key):
     curr_vector[num] = 1
     curr_num = num
 
-    print(curr_vector)
+    # print(curr_vector)
 
 
 def on_release(key):
@@ -69,7 +69,7 @@ def on_release(key):
         curr_vector[num] = 0
         curr_num == None
 
-    print(curr_vector)
+    # print(curr_vector)
 
 
 def keyboard_thread():
