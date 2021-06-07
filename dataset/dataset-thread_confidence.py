@@ -94,7 +94,7 @@ def process_hand_asdf(hand_data):
         if hand_data.multi_hand_landmarks:
             for landmark in hand_data.multi_hand_landmarks[0].landmark:
                 log.write('{:f},{:f},{:f},'.format(landmark.x, landmark.y, landmark.z))
-            log.write('{f},'.format(hand_data.multi_handedness[0].classification[0].score))
+            log.write('{:f},'.format(hand_data.multi_handedness[0].classification[0].score))
         else:
             for i in range(21):
                 log.write(",,,")
