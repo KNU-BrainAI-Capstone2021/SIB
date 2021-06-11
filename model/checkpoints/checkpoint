@@ -1,0 +1,2 @@
+model_checkpoint_path: "asdf_single_log_long.csv"
+all_model_checkpoint_paths: "asdf_single_log_long.csv"
