@@ -1,7 +1,7 @@
 
 ################################# cut_outlier ##################################
 
-def cut_outlier(df, x_names, gamma=0.4):
+def cut_outlier(df, x_names):
     
     df = df.copy()
     df_median = df[x_names]-df[x_names].median()
