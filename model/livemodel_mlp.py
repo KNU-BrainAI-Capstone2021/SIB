@@ -1,81 +1,89 @@
-'''
-Original demo code can be found at:
-  https://google.github.io/mediapipe/solutions/hands.html
-'''
+# File name: dataset-thread.py
+# Platform: Python 3.8.8 on Ubuntu Linux 18.04
+# Required Package(s): mediapipe, pynput
+# Date: 2021.06.19
+# Name: Dohun Kim, DaeHeon Yoon
+
+
+################################# import packages #################################
+
+import threading
+import time
+
+import tensorflow as tf
 
 import cv2
 import mediapipe as mp
 
-import sys, os
 
-sys.path.append(os.pardir)
+########################### key prediction - tensorflow ###########################
 
+def model_thread(model_path):
 
-from utils import live_plotter
-import numpy as np
+    # load pretrained tensorflow model
+    model = tf.keras.models.load_model(model_path)
 
-import time
-
-mp_drawing = mp.solutions.drawing_utils
-mp_hands = mp.solutions.hands
-
-size = 100
-x_vec = np.linspace(0,1,size+1)[0:-1]
-y_vec = np.random.randn(len(x_vec))
-line1 = []
-
-
-# MLP model import
-import tensorflow as tf
-model = tf.create_model()
-
-csv_file_path = 'asdf_single_log_long.csv'
-file_name =  csv_file_path.split("/")[-1]
-model.save_weights(csv_file_path.rstrip(file_name) + "checkpoints/" + file_name)
-
-
-# For webcam input:
-cap = cv2.VideoCapture(0)
-with mp_hands.Hands(
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5) as hands:
-  while cap.isOpened():
-    success, image = cap.read()
-    if not success:
-      print("Ignoring empty camera frame.")
-      # If loading a video, use 'break' instead of 'continue'.
-      continue
-
-    # Flip the image horizontally for a later selfie-view display, and convert
-    # the BGR image to RGB.
-    image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
-    # To improve performance, optionally mark the image as not writeable to
-    # pass by reference.
-    image.flags.writeable = False
-    results = hands.process(image)
-
-    if results.multi_hand_landmarks:
-      val = results.multi_hand_landmarks[0].landmark[8].z
-      y_vec[-1] = val
-      line1 = live_plotter(x_vec, y_vec, line1)
-      y_vec = np.append(y_vec[1:], 0.0)
-
+    model.summary()
     
+    while True:
+        time.sleep(1)
+        pass
 
 
-    # time.sleep(0.3)
-    #
-    # else:
-    #   print(0)
+############################ hand landmark - mediapipe ############################
 
-    # Draw the hand annotations on the image.
-    image.flags.writeable = True
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    if results.multi_hand_landmarks:
-      for hand_landmarks in results.multi_hand_landmarks:
-        mp_drawing.draw_landmarks(
-            image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-    cv2.imshow('MediaPipe Hands', image)
-    if cv2.waitKey(5) & 0xFF == 27:
-      break
-cap.release()
+FPS     = 30
+TIMEOUT = 1 / FPS
+
+def hand_thread(flip=False):
+
+    # mediapipe hands module
+    mp_hands = mp.solutions.hands
+
+    # webcam input
+    cap = cv2.VideoCapture(0)
+
+    with mp_hands.Hands(
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5) as hands:
+
+        old_timestamp = time.time()
+
+        while cap.isOpened():
+            # while-loop with fixed frame rate(FPS)
+            if (time.time() - old_timestamp) <= TIMEOUT:
+                continue
+
+            old_timestamp = time.time()
+
+            success, image = cap.read()
+
+            if not success:
+                print("Ignoring empty camera frame.")
+                continue
+            
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            if flip:
+                image = cv2.flip(image, 1)
+                
+            image.flags.writeable = False
+            hand_data = hands.process(image)
+
+            # ADD HERE: hand_data to numpy input
+
+
+
+####################################### main ######################################
+
+if __name__ == '__main__':
+
+    open('log.csv', 'w').close()  # delete before log
+
+    model_path = 'saved_model/model_mlp_space.h5'
+    
+    key  = threading.Thread(target=model_thread, kwargs={'model_path': model_path})
+    hand = threading.Thread(target=hand_thread, kwargs={'show_cam': True})
+
+    key.start()
+    hand.start()
