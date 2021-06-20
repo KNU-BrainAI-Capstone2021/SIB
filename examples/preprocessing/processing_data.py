@@ -52,7 +52,7 @@ def gamma_smoothing(df, gamma, x_names):
     return df
 
 ################################# minmax_scaler ##################################
-from sklearn.preprocessing import MinMaxScaler
+
 
 def MinMaxScaler(df,x_names):
     
