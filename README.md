@@ -1,26 +1,30 @@
-# SIB
+# SIB : simple is best
 
-<img align="right" width="200" src="images/sib_logo.png">
-&emsp;###SIB : Simple Is Best
+<div style="width:30%; float:left"> 
+       <img align="left" width="150" src="images/sib_logo.png">
+</div>
 
+<div style="width:30%; float:left">
 | Name  | Github Link |
 |-------|--------|
 | 황현상 | [@hwang-hs](https://github.com/hwang-hs) |
 | 윤대헌 | [@Greathoney](https://github.com/Greathoney) |
 | 김도훈 | [@yh08037](https://github.com/yh08037) |
 | 이주경 | [@leuoo](https://github.com/leuoo) |
+</div>
+
+
 <br><br><br>
 
 <p align="center"><image src="images/sibkeyboard.PNG"></p>
-<p align="center"><image src="images/1.PNG" width="700"></p>
+<p align="center"><image src="images/1.PNG" width="700"></p><br>
        
-<p align="center"><image src="images/2.PNG" width="500"></p>
+<p align="center"><image src="images/2.PNG" width="500"></p><br>
 
-<p align="center"><image src="images/mediapipe.PNG" width="500"></p>
+ <p align="center"><img src="images/mediapipe.PNG" width="320"/> 
+  <img src="images/hand_landmark_model.PNG" width="340"/></p><br>
 
-<p align="center"><image src="images/hand_landmark_model.PNG" width="500"></p>
-
-<p align="center"><image src="images/hand_capture.PNG" width="500"></p>
+<p align="center"><image src="images/hand_capture.PNG" width="600"></p>
 <br>
 ### STUDY
 
