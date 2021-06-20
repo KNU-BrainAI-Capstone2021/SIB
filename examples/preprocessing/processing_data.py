@@ -14,6 +14,7 @@ def preprocess(df,x_names, gamma): # df to df
     return pre_df
 
 ################################# cut_outlier ##################################
+from matplotlib.pyplot import axis
 import pandas as pd
 def cut_outlier(df, x_names):
     
@@ -54,13 +55,24 @@ def gamma_smoothing(df, gamma, x_names):
 ################################# minmax_scaler ##################################
 
 
-def MinMaxScaler(df,x_names):
+def MinMaxScaler(df, x_names):
     
-    for column in x_names:
-        df_column = df[column]
-        df_column = df_column.values.reshape(-1, 1)
-        df_column = MinMaxScaler(df_column)
+    # for column in x_names:
+    #     df_column = df[column]
+    #     df_column = df_column.values.reshape(-1, 1)
 
-        for row in range(len(df)):
-            df[column].iloc[row] = df_column[row]
+    #     df_column = MinMaxScaler(df_column)
 
+    #     for row in range(len(df)):
+    #         df[column].iloc[row] = df_column[row]
+
+    df = df.copy()
+
+    x_df = df[x_names]
+
+    x_min = x_df.min(axis=0)
+    x_max = x_df.max(axis=0)
+
+    df[x_names] = (df[x_names] - x_min) / (x_max - x_min)
+
+    return df
