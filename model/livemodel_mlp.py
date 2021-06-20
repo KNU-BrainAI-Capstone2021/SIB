@@ -7,13 +7,17 @@
 
 ################################# import packages #################################
 
-import threading
 import time
+from threading import Thread
+from queue import Queue
 
-import tensorflow as tf
+import numpy as np
+from tensorflow.keras.models import load_model
 
 import cv2
 import mediapipe as mp
+
+q = Queue()
 
 
 ########################### key prediction - tensorflow ###########################
@@ -21,19 +25,32 @@ import mediapipe as mp
 def model_thread(model_path):
 
     # load pretrained tensorflow model
-    model = tf.keras.models.load_model(model_path)
+    model = load_model(model_path)
 
     model.summary()
     
     while True:
-        time.sleep(1)
-        pass
+        if not q.empty():
+            hand_np = q.get()
+            pred = model.predict(hand_np)
+            print(np.argmax(pred))
+
 
 
 ############################ hand landmark - mediapipe ############################
 
 FPS     = 30
 TIMEOUT = 1 / FPS
+
+
+def hand_to_numpy(hand_data):
+    if hand_data.multi_hand_landmarks:
+        result = []
+        for landmark in hand_data.multi_hand_landmarks[0].landmark:
+            result += [landmark.x, landmark.y, landmark.z]
+        return np.array([result])
+    return None
+
 
 def hand_thread(flip=False):
 
@@ -70,7 +87,10 @@ def hand_thread(flip=False):
             image.flags.writeable = False
             hand_data = hands.process(image)
 
-            # ADD HERE: hand_data to numpy input
+            hand_np = hand_to_numpy(hand_data)
+
+            if hand_np is not None:
+                q.put(hand_np)
 
 
 
@@ -78,12 +98,10 @@ def hand_thread(flip=False):
 
 if __name__ == '__main__':
 
-    open('log.csv', 'w').close()  # delete before log
-
     model_path = 'saved_model/model_mlp_space.h5'
     
-    key  = threading.Thread(target=model_thread, kwargs={'model_path': model_path})
-    hand = threading.Thread(target=hand_thread, kwargs={'show_cam': True})
+    key  = Thread(target=model_thread, args=(model_path,))
+    hand = Thread(target=hand_thread)
 
     key.start()
     hand.start()
