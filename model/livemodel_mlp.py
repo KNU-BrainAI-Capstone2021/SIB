@@ -1,11 +1,14 @@
-# File name: dataset-thread.py
+# File name: livemodel_mlp.py
 # Platform: Python 3.8.8 on Ubuntu Linux 18.04
-# Required Package(s): mediapipe, pynput
+# Required Package(s): cv2, mediapipe, numpy, tensorflow
 # Date: 2021.06.19
 # Name: Dohun Kim, DaeHeon Yoon
 
 
 ################################# import packages #################################
+
+import os, sys
+sys.path.append(os.pardir)
 
 import time
 from threading import Thread
@@ -17,7 +20,15 @@ from tensorflow.keras.models import load_model
 import cv2
 import mediapipe as mp
 
+from visualization.smoother import gamma_smoothing
+
+
+############################# shared global variables #############################
+
 q = Queue()
+
+local_min = np.zeros(63)
+local_max = np.zeros(63)
 
 
 ########################### key prediction - tensorflow ###########################
@@ -52,13 +63,36 @@ def hand_to_numpy(hand_data):
     return None
 
 
-def hand_thread(flip=False):
+def hand_preprocessing(hand_np, cut_outlier=False, gamma_smoothing=False, local_minmax=False):
+    if cut_outlier:
+        pass
+
+    if gamma_smoothing:
+        hand_np = gamma_smoothing(hand_np)
+
+    if local_minmax:    # preprocessing - Local MinMaxScaler
+        global local_min, local_max
+
+        reduce_pole = 0.001
+        local_min = np.array(list(map(lambda x,y:min(x, y) * (1 + reduce_pole), local_min, hand_np)))
+        local_max = np.array(list(map(lambda x,y:max(x, y) * (1 - reduce_pole), local_max, hand_np)))
+
+        hand_np = map(lambda x,y,z:(x-y)/(z-y), hand_np, local_min, local_max)
+    
+    return hand_np
+
+
+def hand_thread(flip=False, debug=False):
 
     # mediapipe hands module
     mp_hands = mp.solutions.hands
 
     # webcam input
-    cap = cv2.VideoCapture(0)
+    if not debug:
+        cap = cv2.VideoCapture(0)
+        if not cap.isOpened():
+            print('cv2.VideoCapture open failed.')
+            exit()
 
     with mp_hands.Hands(
         min_detection_confidence=0.5,
@@ -66,19 +100,21 @@ def hand_thread(flip=False):
 
         old_timestamp = time.time()
 
-        while cap.isOpened():
+        while True:
             # while-loop with fixed frame rate(FPS)
             if (time.time() - old_timestamp) <= TIMEOUT:
                 continue
 
             old_timestamp = time.time()
 
-            success, image = cap.read()
+            if debug:
+                image = cv2.imread('../examples/mediapipe/test_image_1.jpg')
+            else:            
+                success, image = cap.read()
+                if not success:
+                    print("Ignoring empty camera frame.")
+                    continue
 
-            if not success:
-                print("Ignoring empty camera frame.")
-                continue
-            
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
             if flip:
@@ -88,6 +124,7 @@ def hand_thread(flip=False):
             hand_data = hands.process(image)
 
             hand_np = hand_to_numpy(hand_data)
+            hand_np = hand_preprocessing(hand_np)
 
             if hand_np is not None:
                 q.put(hand_np)
@@ -100,8 +137,8 @@ if __name__ == '__main__':
 
     model_path = 'saved_model/model_mlp_space.h5'
     
-    key  = Thread(target=model_thread, args=(model_path,))
-    hand = Thread(target=hand_thread)
+    model = Thread(target=model_thread, kwargs={'model_path': model_path})
+    hand  = Thread(target=hand_thread,  kwargs={'debug': True})
 
-    key.start()
+    model.start()
     hand.start()
