@@ -8,13 +8,9 @@
 ################################# import packages #################################
 
 import os, sys
-
-from tensorflow.python.keras.backend import relu
 sys.path.append(os.pardir)
 
 import time
-# from threading import Thread
-# from queue import Queue
 from multiprocessing import Process, Queue
 
 import numpy as np
@@ -27,9 +23,6 @@ import mediapipe as mp
 ############################# shared global variables #############################
 
 q = Queue()
-
-local_min = np.zeros(63)
-local_max = np.zeros(63)
 
 
 ########################### key prediction - tensorflow ###########################
@@ -109,12 +102,26 @@ class GammaSmoothing:
         return result     
 
 class LocalMinMax:
-    pass
+    def __init__(self, reduce_pole=1e-5):
+        self.reduce_pole = reduce_pole
+        self.local_min = None
+        self.local_max = None
+    
+    def process(self, x: np.ndarray) -> np.ndarray:
+        if self.local_min is None:
+            self.local_min = x
+        if self.local_max is None:
+            self.local_max = x
+        
+        self.local_min = np.where(x < self.local_min, x, self.local_min) * (1 + self.reduce_pole)
+        self.local_max = np.where(x > self.local_max, x, self.local_max) * (1 - self.reduce_pole)
+
+        return (x - self.local_min) / (self.local_max - self.local_min)
+
 
 class Preprocessing:
     def __init__(self, cut_outlier=False, gamma_smoothing=False, local_minmax=False):
         self.tasks = []
-
         if cut_outlier:
             self.tasks += [CutOutlier()]  
         if gamma_smoothing:
@@ -145,7 +152,8 @@ def hand_thread(flip=False, debug=False):
             exit()
     
     # hands data preprocessor
-    preprocessor = Preprocessing(gamma_smoothing=True)
+    preprocessor = Preprocessing(gamma_smoothing=True,
+                                 local_minmax=True)
     
     # create mediapipe hands module
     with mp_hands.Hands(
@@ -154,15 +162,13 @@ def hand_thread(flip=False, debug=False):
     
         # while-loop with fixed frame rate(FPS)
         old_timestamp = time.time()
-
         while True:
             if (time.time() - old_timestamp) <= TIMEOUT:
                 continue
-
-            print('FPS: %.3f' % (1/(time.time() - old_timestamp)))
-
+            # print('FPS: %.3f' % (1/(time.time() - old_timestamp)))
             old_timestamp = time.time()
 
+            # get image from file / webcam
             if debug:
                 image = cv2.imread('../examples/mediapipe/test_image_1.jpg')
             else:            
@@ -175,7 +181,8 @@ def hand_thread(flip=False, debug=False):
 
             if flip:
                 image = cv2.flip(image, 1)
-                
+            
+            # get hand landmark data from image
             image.flags.writeable = False
             hand_data = hands.process(image)
 
