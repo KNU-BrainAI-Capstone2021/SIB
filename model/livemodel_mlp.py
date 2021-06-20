@@ -7,6 +7,9 @@
 
 ################################# import packages #################################
 
+import os, sys
+sys.path.append(os.pardir)
+
 import time
 from threading import Thread
 from queue import Queue
@@ -17,7 +20,12 @@ from tensorflow.keras.models import load_model
 import cv2
 import mediapipe as mp
 
+from visualization.smoother import gamma_smoothing
+
 q = Queue()
+
+local_min = np.zeros(63)
+local_max = np.zeros(63)
 
 
 ########################### key prediction - tensorflow ###########################
@@ -50,6 +58,24 @@ def hand_to_numpy(hand_data):
             result += [landmark.x, landmark.y, landmark.z]
         return np.array([result])
     return None
+
+def hand_preprocessing(hand_np, cut_outlier=False, gamma_smoothing=False, local_minmax=False):
+    if cut_outlier:
+        pass
+
+    if gamma_smoothing:
+        hand_np = gamma_smoothing(hand_np)
+
+    if local_minmax:    # preprocessing - Local MinMaxScaler
+        global local_min, local_max
+
+        reduce_pole = 0.001
+        local_min = np.array(list(map(lambda x,y:min(x, y) * (1 + reduce_pole), local_min, hand_np)))
+        local_max = np.array(list(map(lambda x,y:max(x, y) * (1 - reduce_pole), local_max, hand_np)))
+
+        hand_np = map(lambda x,y,z:(x-y)/(z-y), hand_np, local_min, local_max)
+    
+    return hand_np
 
 
 def hand_thread(flip=False):
@@ -88,6 +114,8 @@ def hand_thread(flip=False):
             hand_data = hands.process(image)
 
             hand_np = hand_to_numpy(hand_data)
+
+            hand_np = hand_preprocessing(hand_np, gamma_smoothing=True)
 
             if hand_np is not None:
                 q.put(hand_np)
