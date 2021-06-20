@@ -1,14 +1,20 @@
 # SIB : simple is best
 
-<img align="right" width="150" src="images/sib_logo.png">
+<div style="width:30%; float:left"> 
+       <img align="left" width="150" src="images/sib_logo.png">
+</div>
 
+<div style="width:30%; float:left">
 | Name  | Github Link |
 |-------|--------|
 | 황현상 | [@hwang-hs](https://github.com/hwang-hs) |
 | 윤대헌 | [@Greathoney](https://github.com/Greathoney) |
 | 김도훈 | [@yh08037](https://github.com/yh08037) |
 | 이주경 | [@leuoo](https://github.com/leuoo) |
+</div>
 
+
+<br><br><br>
 
 <p align="center"><image src="images/sibkeyboard.PNG"></p>
 <p align="center"><image src="images/1.PNG" width="700"></p><br>
