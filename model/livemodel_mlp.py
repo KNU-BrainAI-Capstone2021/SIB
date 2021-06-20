@@ -11,7 +11,8 @@ import os, sys
 sys.path.append(os.pardir)
 
 import time
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Value
+from ctypes import c_bool
 
 import numpy as np
 from tensorflow.keras.models import load_model
@@ -19,10 +20,14 @@ from tensorflow.keras.models import load_model
 import cv2
 import mediapipe as mp
 
+from pynput import keyboard
+import termios
+
 
 ############################# shared global variables #############################
 
-q = Queue()
+queue = Queue()
+flag_stop = Value(c_bool, False)
 
 
 ########################### key prediction - tensorflow ###########################
@@ -34,11 +39,11 @@ def model_thread(model_path):
 
     model.summary()
     
-    while True:
-        if q.empty():
+    while not flag_stop.value:
+        if queue.empty():
             continue
 
-        hand_np = q.get()
+        hand_np = queue.get()
         pred = model.predict(hand_np)
         # 만일 "None"레이블의 민감도가 너무 낮으면 올려주고, 높으면 낮춰주는 로직 후처리1
         # sensitivity <- 우리가 지정, 자동으로 지정될 수 있도록?!
@@ -46,6 +51,7 @@ def model_thread(model_path):
         # 0일때 가중치가 0.6이상이면 1로 바꾸고, 1인 친구는 0.4 이하면 0으로 바꾸는 후처리2
         print(np.argmax(pred))
 
+    print('model_thread() terminated.')
 
 
 ############################ hand landmark - mediapipe ############################
@@ -102,8 +108,8 @@ class GammaSmoothing:
         return result     
 
 class LocalMinMax:
-    def __init__(self, reduce_pole=1e-5):
-        self.reduce_pole = reduce_pole
+    def __init__(self, decay_rate=1e-5):
+        self.decay_rate = decay_rate
         self.local_min = None
         self.local_max = None
     
@@ -113,8 +119,8 @@ class LocalMinMax:
         if self.local_max is None:
             self.local_max = x
         
-        self.local_min = np.where(x < self.local_min, x, self.local_min) * (1 + self.reduce_pole)
-        self.local_max = np.where(x > self.local_max, x, self.local_max) * (1 - self.reduce_pole)
+        self.local_min = np.where(x < self.local_min, x, self.local_min) * (1 + self.decay_rate)
+        self.local_max = np.where(x > self.local_max, x, self.local_max) * (1 - self.decay_rate)
 
         return (x - self.local_min) / (self.local_max - self.local_min)
 
@@ -162,7 +168,7 @@ def hand_thread(flip=False, debug=False):
     
         # while-loop with fixed frame rate(FPS)
         old_timestamp = time.time()
-        while True:
+        while not flag_stop.value:
             if (time.time() - old_timestamp) <= TIMEOUT:
                 continue
             # print('FPS: %.3f' % (1/(time.time() - old_timestamp)))
@@ -190,11 +196,22 @@ def hand_thread(flip=False, debug=False):
 
             if hand_np is not None:
                 hand_np = preprocessor.process(hand_np)
-                q.put(hand_np)
+                queue.put(hand_np)
+    
+    print('hand_thread() terminated.')
 
 
 
 ####################################### main ######################################
+
+def on_press(key):
+    if key == keyboard.Key.esc:
+        flag_stop.value = True
+        return False
+
+def flush_input():
+    termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+
 
 if __name__ == '__main__':
 
@@ -206,5 +223,11 @@ if __name__ == '__main__':
     model.start()
     hand.start()
 
+    with keyboard.Listener(
+            on_press=on_press) as listener:
+        listener.join()
+    
+    flush_input()
+    
     model.join()
     hand.join()
