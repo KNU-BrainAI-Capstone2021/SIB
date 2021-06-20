@@ -1,8 +1,7 @@
 # SIB
 
-<image src="images/sib_logo.png" width="300">
-<br><br>
-### SIB : Simple Is Best
+<img align="right" width="200" src="images/sib_logo.png">
+&emsp;###SIB : Simple Is Best
 
 | Name  | Github Link |
 |-------|--------|
@@ -10,8 +9,10 @@
 | 윤대헌 | [@Greathoney](https://github.com/Greathoney) |
 | 김도훈 | [@yh08037](https://github.com/yh08037) |
 | 이주경 | [@leuoo](https://github.com/leuoo) |
-<br>
-<p align="center"><image src="images/1.PNG" width="500"></p>
+<br><br><br>
+
+<center><b><font size=54>SIB KEYBOARD</font></b></center><br>
+<p align="center"><image src="images/1.PNG" width="700"></p>
        
 <p align="center"><image src="images/2.PNG" width="500"></p>
 
