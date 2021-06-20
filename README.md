@@ -1,7 +1,10 @@
 # SIB
 
 <image src="images/sib_logo.png" width="300">
-
+       
+<image src="images/1.PNG" width="500">
+       
+<image src="images/2.PNG" width="500">
 ### SIB : Simple Is Best
 
 | Name  | Github Link |
