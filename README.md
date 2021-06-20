@@ -13,13 +13,13 @@
 <br>
 <p align="center"><image src="images/1.PNG" width="500"></p>
        
-<center><image src="images/2.PNG" width="500"></center>
+<p align="center"><image src="images/2.PNG" width="500"></p>
 
-<center><image src="images/mediapipe.PNG" width="500"></center>
+<p align="center"><image src="images/mediapipe.PNG" width="500"></p>
 
-<center><image src="images/hand_landmark_model.PNG" width="500"></center>
+<p align="center"><image src="images/hand_landmark_model.PNG" width="500"></p>
 
-<center><image src="images/hand_capture.PNG" width="500"></center>
+<p align="center"><image src="images/hand_capture.PNG" width="500"></p>
 <br>
 ### STUDY
 
