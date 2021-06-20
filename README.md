@@ -1,10 +1,7 @@
 # SIB
 
 <image src="images/sib_logo.png" width="300">
-       
-<image src="images/1.PNG" width="500">
-       
-<image src="images/2.PNG" width="500">
+<br><br>
 ### SIB : Simple Is Best
 
 | Name  | Github Link |
@@ -13,8 +10,17 @@
 | 윤대헌 | [@Greathoney](https://github.com/Greathoney) |
 | 김도훈 | [@yh08037](https://github.com/yh08037) |
 | 이주경 | [@leuoo](https://github.com/leuoo) |
+<br>
+<center><image src="images/1.PNG" width="500"></center>
+       
+<center><image src="images/2.PNG" width="500"></center>
 
+<center><image src="images/mediapipe.PNG" width="500"></center>
 
+<center><image src="images/hand_landmark_model.PNG" width="500"></center>
+
+<center><image src="images/hand_capture.PNG" width="500"></center>
+<br><br>
 ### STUDY
 
 &middot; digit-recognizer :  https://www.kaggle.com/c/digit-recognizer<br>
