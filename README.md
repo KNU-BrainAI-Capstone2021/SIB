@@ -20,7 +20,7 @@
 <center><image src="images/hand_landmark_model.PNG" width="500"></center>
 
 <center><image src="images/hand_capture.PNG" width="500"></center>
-<br><br>
+<br>
 ### STUDY
 
 &middot; digit-recognizer :  https://www.kaggle.com/c/digit-recognizer<br>
