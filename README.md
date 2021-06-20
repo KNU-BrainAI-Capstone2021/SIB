@@ -11,7 +11,7 @@
 | 이주경 | [@leuoo](https://github.com/leuoo) |
 <br><br><br>
 
-<center><b><font size=54>SIB KEYBOARD</font></b></center><br>
+<p align="center"><image src="images/sibkeyboard.PNG"></p>
 <p align="center"><image src="images/1.PNG" width="700"></p>
        
 <p align="center"><image src="images/2.PNG" width="500"></p>
