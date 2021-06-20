@@ -1,6 +1,20 @@
 
-################################# cut_outlier ##################################
+################################# preprocessing ##################################
 
+def preprocess(df,x_names, gamma): # df to df
+    
+    df = df.copy()
+
+    cut_df = cut_outlier(df, x_names)
+    gamma_df = gamma_smoothing(cut_df, gamma, x_names)
+    minmax_df = MinMaxScaler(gamma_df, x_names)
+
+    pre_df = minmax_df
+
+    return pre_df
+
+################################# cut_outlier ##################################
+import pandas as pd
 def cut_outlier(df, x_names):
     
     df = df.copy()
@@ -24,4 +38,29 @@ def cut_outlier(df, x_names):
         cc = cc+1
 
     return new_df
+
+################################# gamma_smoothihng ##################################
+
+def gamma_smoothing(df, gamma, x_names):
+    
+    df = df.copy()
+
+    for x in x_names:
+        for row in range(1, len(df)):
+            df[x].iloc[row] = df[x].iloc[row-1] * (1-gamma) + df[x].iloc[row] * gamma
+
+    return df
+
+################################# minmax_scaler ##################################
+from sklearn.preprocessing import MinMaxScaler
+
+def MinMaxScaler(df,x_names):
+    
+    for column in x_names:
+        df_column = df[column]
+        df_column = df_column.values.reshape(-1, 1)
+        df_column = MinMaxScaler(df_column)
+
+        for row in range(len(df)):
+            df[column].iloc[row] = df_column[row]
 
