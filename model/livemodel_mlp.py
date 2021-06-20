@@ -44,6 +44,10 @@ def model_thread(model_path):
         if not q.empty():
             hand_np = q.get()
             pred = model.predict(hand_np)
+            # 만일 "None"레이블의 민감도가 너무 낮으면 올려주고, 높으면 낮춰주는 로직 후처리1
+            # sensitivity <- 우리가 지정, 자동으로 지정될 수 있도록?!
+
+            # 0일때 가중치가 0.6이상이면 1로 바꾸고, 1인 친구는 0.4 이하면 0으로 바꾸는 후처리2
             print(np.argmax(pred))
 
 
@@ -65,15 +69,22 @@ def hand_to_numpy(hand_data):
 
 def hand_preprocessing(hand_np, cut_outlier=False, gamma_smoothing=False, local_minmax=False):
     if cut_outlier:
+        # 라이브 버전의 cut_outlier를 만들어야 함
+        # cout_outlier 전체 평균의 표준편차 <- 잘라내는 걸 확인
+        # 성능에 부담??? <- 여의치 않으면 빼야할 수도?
         pass
 
     if gamma_smoothing:
-        hand_np = gamma_smoothing(hand_np)
+        # hand_np = gamma_smoothing(hand_np)
+        # 라이브 포맷으로 바꿔주어야 함
+        # 기존에는 이전 데이터 하나 가져오기
+        # 이번에는 이전 프레임 데이터를 저장 -> 전처리
+        pass
 
     if local_minmax:    # preprocessing - Local MinMaxScaler
         global local_min, local_max
 
-        reduce_pole = 0.001
+        reduce_pole = 0.00001
         local_min = np.array(list(map(lambda x,y:min(x, y) * (1 + reduce_pole), local_min, hand_np)))
         local_max = np.array(list(map(lambda x,y:max(x, y) * (1 - reduce_pole), local_max, hand_np)))
 
@@ -93,17 +104,22 @@ def hand_thread(flip=False, debug=False):
         if not cap.isOpened():
             print('cv2.VideoCapture open failed.')
             exit()
+    
+    
+    old_timestamp = time.time()
 
     with mp_hands.Hands(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
 
-        old_timestamp = time.time()
 
         while True:
             # while-loop with fixed frame rate(FPS)
-            if (time.time() - old_timestamp) <= TIMEOUT:
+            interval = time.time() - old_timestamp
+            if interval <= TIMEOUT:
                 continue
+
+            print('FPS: %.3f' % (1/interval))
 
             old_timestamp = time.time()
 
@@ -124,6 +140,7 @@ def hand_thread(flip=False, debug=False):
             hand_data = hands.process(image)
 
             hand_np = hand_to_numpy(hand_data)
+
             hand_np = hand_preprocessing(hand_np)
 
             if hand_np is not None:
