@@ -11,7 +11,7 @@
 | 김도훈 | [@yh08037](https://github.com/yh08037) |
 | 이주경 | [@leuoo](https://github.com/leuoo) |
 <br>
-<center><image src="images/1.PNG" width="500"></center>
+<p align="center"><image src="images/1.PNG" width="500"></p>
        
 <center><image src="images/2.PNG" width="500"></center>
 
