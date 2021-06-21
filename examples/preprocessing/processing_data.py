@@ -1,20 +1,22 @@
 ################################# preprocessing ##################################
 
-def Preprocess_data(df, x_names, gamma=0.4,  ):
+################################# preprocessing ##################################
 
-    cut_df = cut_outlier(df,x_names)
-    smooth_df = gamma_smoothing(cut_df, x_names, gamma)
-    minmax_df = MinMaxScaler(smooth_df, x_names)
+def preprocess(df,x_names, gamma): # df to df
+    
+    df = df.copy()
 
-    processed_df = minmax_df
+    cut_df = cut_outlier(df, x_names)
+    gamma_df = gamma_smoothing(cut_df, gamma, x_names)
+    minmax_df = MinMaxScaler(gamma_df, x_names)
 
-    return processed_df
+    pre_df = minmax_df
 
+    return pre_df
 
-
-################################# 보조 함수들... ##################################
 ################################# cut_outlier ##################################
-
+from matplotlib.pyplot import axis
+import pandas as pd
 def cut_outlier(df, x_names):
     
     df = df.copy()
@@ -40,9 +42,9 @@ def cut_outlier(df, x_names):
 
     return new_df
 
-################################# gamma smoothing ##################################
+################################# gamma_smoothihng ##################################
 
-def gamma_smoothing(df,x_names, gamma):
+def gamma_smoothing(df, gamma, x_names):
     
     df = df.copy()
 
@@ -52,18 +54,27 @@ def gamma_smoothing(df,x_names, gamma):
 
     return df
 
-################################# MinMaxScaler ##################################
+################################# minmax_scaler ##################################
 
-def MinMaxScaler(df,x_names):
+
+def MinMaxScaler(df, x_names):
+    
+    # for column in x_names:
+    #     df_column = df[column]
+    #     df_column = df_column.values.reshape(-1, 1)
+
+    #     df_column = MinMaxScaler(df_column)
+
+    #     for row in range(len(df)):
+    #         df[column].iloc[row] = df_column[row]
+
     df = df.copy()
 
-    df_min = df.min()
-    df_max = df.max()
+    x_df = df[x_names]
 
-    for cc in range(len(x_names)):
-        for i in range(len(df)):
-            df.iloc[i,cc] = (df.iloc[i,cc] - df_min) / (df_max - df_min)
+    x_min = x_df.min(axis=0)
+    x_max = x_df.max(axis=0)
+
+    df[x_names] = (df[x_names] - x_min) / (x_max - x_min)
 
     return df
-
-
