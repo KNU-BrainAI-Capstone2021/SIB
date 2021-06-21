@@ -105,7 +105,11 @@ class GammaSmoothing:
     
         result = (1-self.gamma)*self.prev + self.gamma*x
         self.prev = result
-        return result     
+        return result
+    
+    def reset(self):
+        self.prev = None
+
 
 class LocalMinMax:
     def __init__(self, decay_rate=1e-5):
@@ -116,13 +120,17 @@ class LocalMinMax:
     def process(self, x: np.ndarray) -> np.ndarray:
         if self.local_min is None:
             self.local_min = x
-        if self.local_max is None:
             self.local_max = x
+            return x
         
         self.local_min = np.where(x < self.local_min, x, self.local_min) * (1 + self.decay_rate)
         self.local_max = np.where(x > self.local_max, x, self.local_max) * (1 - self.decay_rate)
 
         return (x - self.local_min) / (self.local_max - self.local_min)
+    
+    def reset(self):
+        self.local_min = None
+        self.local_max = None
 
 
 class Preprocessing:
@@ -139,7 +147,10 @@ class Preprocessing:
         for task in self.tasks:
             x = task.process(x)
         return x
-
+    
+    def reset(self):
+        for task in self.tasks:
+            task.reset()
 
 
 FPS     = 30
