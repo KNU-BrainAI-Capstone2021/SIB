@@ -15,6 +15,7 @@ from pynput import keyboard
 import cv2
 import mediapipe as mp
 
+flag_stop = False
 
 
 ############################# keyboard input - pynput #############################
@@ -41,10 +42,10 @@ def on_press(key):
     try:
         num = key2num(key)
     except:
-        return
+        return False
 
     if num == None:
-        return
+        return False
     
     global curr_num
     if curr_num != None:
@@ -59,10 +60,10 @@ def on_release(key):
     try:
         num = key2num(key)
     except:
-        return
+        return False
 
     if num == None:
-        return
+        return False
     
     global curr_num
     if curr_num == num:
@@ -73,14 +74,17 @@ def on_release(key):
 
 
 def keyboard_thread():
+    global flag_stop
+
     with keyboard.Listener(
         on_press=on_press,
         on_release=on_release) as listener:
 
         listener.join()
         
-        flush_input()
-        print('\nkeyboard thread terminated')
+    flag_stop = True
+    flush_input()
+    print('keyboard_thread() terminated.')
 
 
 
@@ -109,24 +113,27 @@ def process_hand_asdf(hand_data):
 
 def hand_thread(flip=False, show_cam=False):
 
-    # mediapipe hands module
+    # mediapipe hands shortcuts
     mp_drawing = mp.solutions.drawing_utils
     mp_hands   = mp.solutions.hands
 
     # webcam input
     cap = cv2.VideoCapture(0)
-
+    if not cap.isOpened():
+        print('cv2.VideoCapture open failed.')
+        return
+    
+    # create mediapipe hands module
     with mp_hands.Hands(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
 
+        # while-loop with fixed frame rate(FPS)
         old_timestamp = time.time()
-
-        while cap.isOpened():
-            # while-loop with fixed frame rate(FPS)
+        while not flag_stop:
             if (time.time() - old_timestamp) <= TIMEOUT:
                 continue
-
+            
             old_timestamp = time.time()
 
             success, image = cap.read()
@@ -170,8 +177,9 @@ def hand_thread(flip=False, show_cam=False):
                 
                 if cv2.waitKey(5) & 0xFF == 27:
                     break
-            
-
+    
+    cap.release()
+    print('hand_thread() terminated.')
 
 
 
@@ -186,3 +194,6 @@ if __name__ == '__main__':
 
     key.start()
     hand.start()
+
+    key.join()
+    hand.join()

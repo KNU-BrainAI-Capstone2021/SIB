@@ -155,7 +155,7 @@ def hand_thread(flip=False, debug=False):
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
             print('cv2.VideoCapture open failed.')
-            exit()
+            return
     
     # hands data preprocessor
     preprocessor = Preprocessing(gamma_smoothing=True,
@@ -172,6 +172,7 @@ def hand_thread(flip=False, debug=False):
             if (time.time() - old_timestamp) <= TIMEOUT:
                 continue
             # print('FPS: %.3f' % (1/(time.time() - old_timestamp)))
+
             old_timestamp = time.time()
 
             # get image from file / webcam
@@ -198,6 +199,7 @@ def hand_thread(flip=False, debug=False):
                 hand_np = preprocessor.process(hand_np)
                 queue.put(hand_np)
     
+    cap.release()
     print('hand_thread() terminated.')
 
 
