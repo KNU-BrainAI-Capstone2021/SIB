@@ -235,7 +235,7 @@ def flush_input():
 
 if __name__ == '__main__':
 
-    model_path = 'saved_model/model_mlp_space.h5'
+    model_path = 'model_mlp_space.h5'
     
     model = Process(target=model_thread, kwargs={'model_path': model_path})
     hand  = Process(target=hand_thread,  kwargs={'debug': False})
