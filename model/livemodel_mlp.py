@@ -31,6 +31,13 @@ flag_stop = Value(c_bool, False)
 
 
 ########################### key prediction - tensorflow ###########################
+def output_make_letter(a: np.ndarray) -> np.ndarray:
+    for i in range(len(a)):
+        if (a[i]>=0.6):
+            a[i]=1
+        elif (a[i]<=0.4):
+            a[i]=0
+    return a
 
 def model_thread(model_path):
 
