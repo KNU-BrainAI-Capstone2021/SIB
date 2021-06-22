@@ -21,11 +21,12 @@
 
 ## MediaPipe Hands
 <img src="images/mediapipe.PNG" width="600">
-<img src="images/hand_landmark_model.PNG" width="600">
+<!-- <img src="images/hand_landmark_model.PNG" width="600"> -->
 <img src="images/hands.gif" width="600">
 
 ## Data Generation
 ![](images/data_gen.png)
+![](images/data_gen.gif)
 
 
 ## Data Preprocessing
@@ -41,7 +42,10 @@
 
 
 ## Model Design
-<img src="images/live_model.png" width="600">
+<img src="images/live_model.png" width="500">
+
+## Live Model Demo
+![](images/live_model.gif)
 
 
 
