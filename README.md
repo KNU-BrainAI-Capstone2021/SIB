@@ -18,12 +18,32 @@
 <!-- ![](images/sibkeyboard.PNG) -->
 <!-- <image src="images/1.PNG" width="700"><br> -->
 <img src="images/2.PNG" width="600">
-       
-       
+
 ## MediaPipe Hands
 <img src="images/mediapipe.PNG" width="600">
 <img src="images/hand_landmark_model.PNG" width="600">
 <img src="images/hands.gif" width="600">
+
+## Data Generation
+![](images/data_gen.png)
+
+
+## Data Preprocessing
+### Data Smoothing 
+| Original | Gamma Decay | Local Average |
+| -------- | ----------- | ------------- |
+|![](images/hand_original.png)|![](images/hand_gamma.png)|![](images/hand_average.png)|
+
+### 3D Visualization
+| Original | Gamma Decay | Local Average |
+| -------- | ----------- | ------------- |
+|![](images/hand_original.gif)|![](images/hand_gamma.gif)|![](images/hand_average.gif)|
+
+
+## Model Design
+<img src="images/live_model.png" width="600">
+
+
 
 
 ## Study
