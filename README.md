@@ -13,16 +13,15 @@
 
 <br><br><br><br><br>
 
-<p align="center"><image src="images/sibkeyboard.PNG"></p>
-<p align="center"><image src="images/1.PNG" width="700"></p><br>
+<image src="images/sibkeyboard.PNG">
+<image src="images/1.PNG" width="700"><br>
        
-<p align="center"><image src="images/2.PNG" width="500"></p><br>
+<image src="images/2.PNG" width="600"><br>
 
- <p align="center"><img src="images/mediapipe.PNG" width="320"/> 
-  <img src="images/hand_landmark_model.PNG" width="340"/></p><br>
+<img src="images/mediapipe.PNG" width="600"/><br>
+<img src="images/hand_landmark_model.PNG" width="600"/><br>
 
-<p align="center"><image src="images/hand_capture.PNG" width="600"></p>
-<br>
+<image src="images/hand_capture.PNG" width="600"><br>
        
 ### STUDY
 <b>Digit Recognizer</b>      
