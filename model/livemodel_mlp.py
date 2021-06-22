@@ -31,15 +31,44 @@ flag_stop = Value(c_bool, False)
 
 
 ########################### key prediction - tensorflow ###########################
-def output_make_letter(a: np.ndarray) -> np.ndarray:
-    for i in range(len(a)):
-        if (a[i]>=0.6):
-            a[i]=1
-        elif (a[i]<=0.4):
-            a[i]=0
-    return a
+
+
+class LetterPulse:
+    def __init__(self, up_threashold=0.6, down_threashold=0.4):
+        self.up_threashold = up_threashold
+        self.down_threashold = down_threashold
+        self.activate_list = np.ndarray([0,0,0,0,1])
+        self.is_print = False
+
+    def process():
+        pass
+
+    def reset(self):
+        self.activate_list = np.ndarray([0,0,0,0,1])
+
+
+class Postprocessing:
+    def __init__(self, letter_pulse=False):
+        self.tasks = []
+        if letter_pulse:
+            self.tasks += [LetterPulse()]
+    
+    def process(self, x: np.ndarray) -> np.ndarray:
+        for task in self.tasks:
+            x = task.process(x)
+        return x
+
+    def check_print(self) -> bool:
+        return self.tasks[0].is_print
+
+    def reset(self):
+        for task in self.tasks:
+            task.reset()
+
 
 def model_thread(model_path):
+
+    postprocessor = Postprocessing(letter_pulse=True)
 
     # load pretrained tensorflow model
     model = load_model(model_path)
@@ -56,7 +85,11 @@ def model_thread(model_path):
         # sensitivity <- 우리가 지정, 자동으로 지정될 수 있도록?!
 
         # 0일때 가중치가 0.6이상이면 1로 바꾸고, 1인 친구는 0.4 이하면 0으로 바꾸는 후처리2
-        print(np.argmax(pred))
+        value = postprocessor.process(pred)
+        is_print = postprocessor.check_print()
+
+        if is_print:
+            print(value)
 
     print('model_thread() terminated.')
 
@@ -72,32 +105,10 @@ def hand_to_numpy(hand_data):
     return None
 
 
-# def hand_preprocessing(hand_np, cut_outlier=False, gamma_smoothing=False, local_minmax=False):
-#     if cut_outlier:
-#         # 라이브 버전의 cut_outlier를 만들어야 함
-#         # cout_outlier 전체 평균의 표준편차 <- 잘라내는 걸 확인
-#         # 성능에 부담??? <- 여의치 않으면 빼야할 수도?
-#         pass
-
-#     if gamma_smoothing:
-#         # hand_np = gamma_smoothing(hand_np)
-#         # 라이브 포맷으로 바꿔주어야 함
-#         # 기존에는 이전 데이터 하나 가져오기
-#         # 이번에는 이전 프레임 데이터를 저장 -> 전처리
-#         hand_np = smoothing.process(hand_np)
-
-#     if local_minmax:    # preprocessing - Local MinMaxScaler
-#         global local_min, local_max
-
-#         reduce_pole = 0.00001
-#         local_min = np.array(list(map(lambda x,y:min(x, y) * (1 + reduce_pole), local_min, hand_np)))
-#         local_max = np.array(list(map(lambda x,y:max(x, y) * (1 - reduce_pole), local_max, hand_np)))
-
-#         hand_np = map(lambda x,y,z:(x-y)/(z-y), hand_np, local_min, local_max)
-    
-#     return hand_np
-
 class CutOutlier:
+    # 라이브 버전의 cut_outlier를 만들어야 함
+    # cout_outlier 전체 평균의 표준편차 <- 잘라내는 걸 확인
+    # 성능에 부담??? <- 여의치 않으면 빼야할 수도?
     pass
 
 class GammaSmoothing:
@@ -116,7 +127,6 @@ class GammaSmoothing:
     
     def reset(self):
         self.prev = None
-
 
 class LocalMinMax:
     def __init__(self, decay_rate=1e-5):
@@ -235,7 +245,7 @@ def flush_input():
 
 if __name__ == '__main__':
 
-    model_path = 'model_mlp_space.h5'
+    model_path = 'saved_model/new_model_mlp2.h5'
     
     model = Process(target=model_thread, kwargs={'model_path': model_path})
     hand  = Process(target=hand_thread,  kwargs={'debug': False})
