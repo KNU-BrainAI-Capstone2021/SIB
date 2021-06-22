@@ -116,7 +116,7 @@ def hand_thread(flip=False, show_cam=False):
     mp_hands   = mp.solutions.hands
 
     # webcam input
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(2)
     if not cap.isOpened():
         print('cv2.VideoCapture open failed.')
         return
