@@ -21,9 +21,9 @@
        
        
 ## MediaPipe Hands
+<img src="images/hands.gif" width="600">
 <img src="images/mediapipe.PNG" width="600">
 <img src="images/hand_landmark_model.PNG" width="600">
-<img src="images/hand_capture.PNG" width="600">
 
 
 ## Study
