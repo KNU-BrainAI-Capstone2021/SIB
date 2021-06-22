@@ -38,27 +38,23 @@ class LetterPulse:
         self.up_threashold = up_threashold
         self.down_threashold = down_threashold
         self.activate_list = np.ndarray([0,0,0,0,1])
-        self.is_print = False
 
     def process(self, x: np.ndarray) -> int:
         max_index = x.argmax()
         min_index = x.argmin()
         before_max_index = self.activate_list.argmax()
 
-         
         if x[max_index] > 0.5:
             if self.activate_list[max_index] == 0:
                 self.activate_list[before_max_index] = 0
                 self.activate_list[max_index] = 1
                 if max_index != 4:
-                    self.is_print = True
+                    print(max_index)
         
         if x[min_index] < 0.4:
             if self.activate_list[4] != 1:
                 self.activate_list[before_max_index] = 0
                 self.activate_list[4] = 1
-        
-        return max_index
 
     def reset(self):
         self.activate_list = np.ndarray([0,0,0,0,1])
@@ -74,9 +70,6 @@ class Postprocessing:
         for task in self.tasks:
             x = task.process(x)
         return x
-
-    def check_print(self) -> bool:
-        return self.tasks[0].is_print
 
     def reset(self):
         for task in self.tasks:
@@ -102,11 +95,7 @@ def model_thread(model_path):
         # sensitivity <- 우리가 지정, 자동으로 지정될 수 있도록?!
 
         # 0일때 가중치가 0.6이상이면 1로 바꾸고, 1인 친구는 0.4 이하면 0으로 바꾸는 후처리2
-        value = postprocessor.process(pred)
-        is_print = postprocessor.check_print()
-
-        if is_print:
-            print(value)
+        postprocessor.process(pred)  # also print answer
 
     print('model_thread() terminated.')
 
