@@ -40,8 +40,25 @@ class LetterPulse:
         self.activate_list = np.ndarray([0,0,0,0,1])
         self.is_print = False
 
-    def process():
-        pass
+    def process(self, x: np.ndarray) -> int:
+        max_index = x.argmax()
+        min_index = x.argmin()
+        before_max_index = self.activate_list.argmax()
+
+         
+        if x[max_index] > 0.5:
+            if self.activate_list[max_index] == 0:
+                self.activate_list[before_max_index] = 0
+                self.activate_list[max_index] = 1
+                if max_index != 4:
+                    self.is_print = True
+        
+        if x[min_index] < 0.4:
+            if self.activate_list[4] != 1:
+                self.activate_list[before_max_index] = 0
+                self.activate_list[4] = 1
+        
+        return max_index
 
     def reset(self):
         self.activate_list = np.ndarray([0,0,0,0,1])
