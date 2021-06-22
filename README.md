@@ -18,11 +18,11 @@
 | Directory     | Description |
 |---------------|-------------|
 | [dataset](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/dataset)| 데이터셋들과 데이터셋 생성하기 위한 코드들 |
-| [examples](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/dataset)| mediapipe, pynput등 라이브러리 사용법 또는 데이터 시각화, 전처리에 대한 예제 코드들 |
-| [images](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/dataset)| markdown 문서 작성을 위한 이미지들 |
-| [model](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/dataset)| 딥러닝 모델의 정의와 학습을 위한 코드들과 학습된 모델을 저장|
-| [presentation](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/dataset)| SIB팀 발표 자료 ppt/pdf 모음 |
-| [visualization](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/dataset)| 데이터 분석과 시각화를 위한 코드들과 결과물을 저장 |
+| [examples](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/examples)| mediapipe, pynput등 라이브러리 사용법 또는 데이터 시각화, 전처리에 대한 예제 코드들 |
+| [images](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/images)| markdown 문서 작성을 위한 이미지들 |
+| [model](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/model)| 딥러닝 모델의 정의와 학습을 위한 코드들과 학습된 모델을 저장|
+| [presentation](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/presentation)| SIB팀 발표 자료 ppt/pdf 모음 |
+| [visualization](https://github.com/KNU-BrainAI-Capstone2021/SIB/tree/main/visualization)| 데이터 분석과 시각화를 위한 코드들과 결과물을 저장 |
 
 ## Idea
 <!-- ![](images/sibkeyboard.PNG) -->
