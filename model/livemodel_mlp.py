@@ -33,16 +33,18 @@ flag_stop = Value(c_bool, False)
 ########################### key prediction - tensorflow ###########################
 
 
-class LetterPulse:
+class LetterTrigger:
     def __init__(self, up_threashold=0.6, down_threashold=0.4):
         self.up_threashold = up_threashold
         self.down_threashold = down_threashold
-        self.activate_list = np.ndarray([0,0,0,0,1])
+        self.activate_list = np.array([0,0,0,0,1])
+        self.key_mapping = ['a','s','d','f']
 
-    def process(self, x: np.ndarray) -> int:
+    def process(self, x: np.ndarray):
         max_index = x.argmax()
         min_index = x.argmin()
         before_max_index = self.activate_list.argmax()
+        x = x[0]
 
         if x[max_index] > 0.5:
             if self.activate_list[max_index] == 0:
@@ -60,11 +62,20 @@ class LetterPulse:
         self.activate_list = np.ndarray([0,0,0,0,1])
 
 
+class LetterPostiveEdge:
+    def __init__(self):
+        pass
+    
+
+
 class Postprocessing:
-    def __init__(self, letter_pulse=False):
+    def __init__(self, letter_trigger=False, letter_postive_edge=False):
         self.tasks = []
-        if letter_pulse:
-            self.tasks += [LetterPulse()]
+        if letter_trigger:
+            self.tasks += [LetterTrigger()]
+        
+        if letter_postive_edge:
+            self.tasks += [LetterPostiveEdge()]
     
     def process(self, x: np.ndarray) -> np.ndarray:
         for task in self.tasks:
@@ -78,7 +89,7 @@ class Postprocessing:
 
 def model_thread(model_path):
 
-    postprocessor = Postprocessing(letter_pulse=True)
+    postprocessor = Postprocessing(letter_trigger=True)
 
     # load pretrained tensorflow model
     model = load_model(model_path)
@@ -154,6 +165,7 @@ class LocalMinMax:
     def reset(self):
         self.local_min = None
         self.local_max = None
+
 
 
 class Preprocessing:
