@@ -1,6 +1,6 @@
 # SIB : simple is best
 
-<img src="images/sib_logo.png" width="30%">
+<img src="images/sib_logo.png" width="300">
 
 | Name  | Github Link |
 |-------|--------|
