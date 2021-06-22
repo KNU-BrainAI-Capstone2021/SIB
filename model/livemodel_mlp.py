@@ -15,6 +15,7 @@ from multiprocessing import Process, Queue, Value
 from ctypes import c_bool
 
 import numpy as np
+np.set_printoptions(formatter={'float_kind':lambda x:"{0:0.2f}".format(x)})
 from tensorflow.keras.models import load_model
 
 import cv2
@@ -29,16 +30,17 @@ import termios
 queue = Queue()
 flag_stop = Value(c_bool, False)
 
+fixMinMax_file_name = "../dataset/asdf-honey-final.csv"
 
 ########################### key prediction - tensorflow ###########################
 
 
 class LetterTrigger:
-    def __init__(self, up_threashold=0.6, down_threashold=0.4):
+    def __init__(self, up_threashold=0.5, down_threashold=0.4):
         self.up_threashold = up_threashold
         self.down_threashold = down_threashold
         self.activate_list = np.array([0,0,0,0,1])
-        self.key_mapping = ['a','s','d','f']
+        self.key_mapping = ['A','S','D','F','~']
 
     def process(self, x: np.ndarray):
         max_index = x.argmax()
@@ -46,17 +48,16 @@ class LetterTrigger:
         before_max_index = self.activate_list.argmax()
         x = x[0]
 
-        if x[max_index] > 0.5:
+        if x[max_index] > self.up_threashold:
             if self.activate_list[max_index] == 0:
                 self.activate_list[before_max_index] = 0
                 self.activate_list[max_index] = 1
-                if max_index != 4:
-                    print(max_index)
+                print(self.key_mapping[max_index])
         
-        if x[min_index] < 0.4:
-            if self.activate_list[4] != 1:
+        elif self.activate_list[4] != 1 and x[before_max_index] < self.down_threashold:
                 self.activate_list[before_max_index] = 0
                 self.activate_list[4] = 1
+                print("~")
 
     def reset(self):
         self.activate_list = np.ndarray([0,0,0,0,1])
@@ -106,6 +107,7 @@ def model_thread(model_path):
         # sensitivity <- 우리가 지정, 자동으로 지정될 수 있도록?!
 
         # 0일때 가중치가 0.6이상이면 1로 바꾸고, 1인 친구는 0.4 이하면 0으로 바꾸는 후처리2
+        # print(pred, np.argmax(pred))
         postprocessor.process(pred)  # also print answer
 
     print('model_thread() terminated.')
@@ -166,10 +168,32 @@ class LocalMinMax:
         self.local_min = None
         self.local_max = None
 
+class FixedMinMax:
+    def __init__(self, fixed_minmax_filepath):
+        import pandas as pd
+        x_names = ['L%d%c' % (i, c) for i in range(21) for c in ['x', 'y', 'z']]
+        y_names = ['a', 's', 'd', 'f']
+        col_names = x_names + y_names
 
+        df = pd.read_csv(fixed_minmax_filepath, names=col_names)
+        df = df[x_names]
+
+        self.fix_min = df.min().values
+        self.fix_max = df.max().values
+
+    def process(self, x: np.ndarray) -> np.ndarray:
+        value = (x - self.fix_min) / (self.fix_max - self.fix_min)
+        # value[np.where(value < 0)] = 0
+        # value[np.where(value > 1)] = 1
+        
+        return value
+
+    def reset(self):
+        pass
+    
 
 class Preprocessing:
-    def __init__(self, cut_outlier=False, gamma_smoothing=False, local_minmax=False):
+    def __init__(self, cut_outlier=False, gamma_smoothing=False, local_minmax=False, fixed_minmax=False, fixed_minmax_filepath="None"):
         self.tasks = []
         if cut_outlier:
             self.tasks += [CutOutlier()]  
@@ -177,6 +201,8 @@ class Preprocessing:
             self.tasks += [GammaSmoothing()]
         if local_minmax:
             self.tasks += [LocalMinMax()]
+        if fixed_minmax:
+            self.tasks += [FixedMinMax(fixed_minmax_filepath)]
 
     def process(self, x: np.ndarray) -> np.ndarray:
         for task in self.tasks:
@@ -205,7 +231,7 @@ def hand_thread(flip=False, debug=False):
     
     # hands data preprocessor
     preprocessor = Preprocessing(gamma_smoothing=True,
-                                 local_minmax=True)
+                                 fixed_minmax=True, fixed_minmax_filepath=fixMinMax_file_name)
     
     # create mediapipe hands module
     with mp_hands.Hands(
@@ -263,7 +289,7 @@ def flush_input():
 
 if __name__ == '__main__':
 
-    model_path = 'saved_model/new_model_mlp2.h5'
+    model_path = 'saved_model/new_model_mlp3.h5'
     
     model = Process(target=model_thread, kwargs={'model_path': model_path})
     hand  = Process(target=hand_thread,  kwargs={'debug': False})
